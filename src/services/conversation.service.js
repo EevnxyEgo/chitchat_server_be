@@ -43,3 +43,34 @@ export const populateConversation = async(id, fieldsToPopulate, fieldsToRemove)=
     }
     return populatedConversation;
 };
+
+export const getConversations = async(userId)=>{
+    let conversations;
+    await conversationModel.find({
+        users: {$elemMatch:{$eq:userId}},   
+    })
+    .populate("users", "-password")
+    .populate("admin", "-password")
+    .populate("latestMessage")
+    .sort({updatedAt:-1})
+    .then(async(results)=>{
+        results = await userModel.populate(results,{
+            path:"latestMessage.sender",
+            select:"name email picture status"
+        });
+        conversations = results;
+    }).catch((err)=>{
+        throw createHttpError.BadRequest("Something went wrong")
+    })
+    return conversations;
+};
+
+export const updateLatestMessage = async(conversationId, message)=>{
+    const updatedConversation = await conversationModel.findByIdAndUpdate(conversationId,{
+        latestMessage: message,
+    });
+    if (!updatedConversation){
+        throw createHttpError.BadRequest("Something went wrong");
+    }
+    return updatedConversation;
+};

@@ -7,6 +7,10 @@ const conversationSchema=mongoose.Schema(
             required:[true, "Conversation name is required"],
             trim: true,
         },
+        picture:{
+            type: String,
+            required: true,
+        },
         isGroup:{
             type: Boolean,
             required: true,
@@ -20,7 +24,7 @@ const conversationSchema=mongoose.Schema(
         ],
         latestMessage:{
             type: ObjectId,
-            ref: "MessageModel",
+            ref: "messageModel",
         },
         admin:{
             type: ObjectId,
@@ -33,7 +37,7 @@ const conversationSchema=mongoose.Schema(
     },
 );
 const conversationModel=
-    mongoose.model.conversationModel || 
+    mongoose.models.conversationModel || 
     mongoose.model("conversationModel", conversationSchema);
 
 export default conversationModel;
